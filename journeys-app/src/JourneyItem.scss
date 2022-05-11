@@ -1,0 +1,22 @@
+.journey-item {
+    .complete-icon {
+        margin: 20px 0 0 20px;
+    }
+
+    .title {
+        font-weight: bold;
+        font-size: 1.2em;
+        text-align: left;
+        margin: 20px;
+    }
+
+    .description {
+        margin: 20px;
+        text-align: left;
+    }
+
+    .action-buttons {
+        text-align: end;
+        margin: 20px;
+    }
+}
