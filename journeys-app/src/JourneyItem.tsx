@@ -3,7 +3,7 @@ import './JourneyItem.scss';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import {styled} from '@mui/material/styles';
-import {IJourneyItem} from "./IJourneyItem";
+import {IJourneyItem} from "./interfaces/IJourneyItem";
 import {Box} from "@mui/material";
 
 const Item = styled(Paper)(({theme}) => ({
