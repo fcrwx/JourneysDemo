@@ -47,7 +47,6 @@ function App() {
 
             const historyRequest = new Request(getExecutionHistoryUrl, {
                 method: 'POST',
-                mode: 'no-cors',
                 body: JSON.stringify({
                     executionArn: data.executionArn,
                     includeExecutionData: true,
