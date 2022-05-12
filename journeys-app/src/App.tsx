@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Slide from '@mui/material/Slide';
 import CloseIcon from '@mui/icons-material/Close';
 import {TransitionProps} from '@mui/material/transitions';
+import JourneyStepper from './JourneyStepper';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -93,7 +94,7 @@ function App() {
     return (
         <div className="App">
             <div className="page-header">
-                <div className="page-title">Journeys Demo</div>
+                <div className="page-title">DE&I Leader Program</div>
                 <div className="introduction">
                     Sit amet purus gravida quis blandit. Purus semper eget duis at tellus. Ac turpis egestas integer eget aliquet. Vel facilisis volutpat est
                     velit egestas dui id ornare. Sit amet porttitor eget dolor. Pretium aenean pharetra magna ac placerat. Magna fermentum iaculis eu non.
@@ -109,6 +110,10 @@ function App() {
                     })
                 }
             </Stack>
+
+            <div className="stepper-container">
+                <JourneyStepper></JourneyStepper>
+            </div>
 
             <Dialog
                 fullScreen
