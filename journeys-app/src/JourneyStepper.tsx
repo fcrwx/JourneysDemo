@@ -67,9 +67,9 @@ function JourneyStepper(props: { steps: JourneyTask[], executionArn: string}) {
 
     const sendTaskSuccess = async () => {
         const executionHistory: ExecutionHistoryResponse = await getExecutionHistory();
-        const currentTask = executionHistory.events.find((eventItem) => eventItem.type === ExecutionType.TaskScheduled);
-        if (currentTask) {
-            const taskParameters = JSON.parse(currentTask.taskScheduledEventDetails.parameters) as TaskScheduledEventDetailsParameters;
+        const currentTaskIndex = executionHistory.events.map((eventItem) => eventItem.type === ExecutionType.TaskScheduled).lastIndexOf(true);
+        if (currentTaskIndex) {
+            const taskParameters = JSON.parse(executionHistory.events[currentTaskIndex].taskScheduledEventDetails.parameters) as TaskScheduledEventDetailsParameters;
             const token = taskParameters.Payload.token;
 
             const sendTaskSuccessRequest = new Request(sendTaskSuccessUrl, {
