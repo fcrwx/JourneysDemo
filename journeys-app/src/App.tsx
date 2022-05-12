@@ -73,6 +73,7 @@ function App() {
                 const type = key.split(':')[0];
                 const newItem: JourneyTask = {
                     id: index,
+                    type: type,
                     title: `${type}: ${data.States[key].Comment}`,
                     description: lorem.generateSentences(4),
                     complete: false,
@@ -123,8 +124,7 @@ function App() {
                     taskToken: token
                 })
             });
-            const sendTaskSuccessResponse = await fetch(sendTaskSuccessRequest);
-            console.log(sendTaskSuccessResponse);
+            await fetch(sendTaskSuccessRequest);
         }
     }
 
@@ -180,11 +180,25 @@ function App() {
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <div className="article-content">
-                    {lorem.generateSentences(10)}<br/><br/>
-                    {lorem.generateSentences(10)}<br/><br/>
-                    {lorem.generateSentences(10)}<br/><br/>
-                    {lorem.generateSentences(10)}<br/><br/>
+                <div className="dialog-content">
+                    {items[selectedItem]?.type === 'Video' &&
+                        <div>
+                            {lorem.generateSentences(10)}<br/><br/>
+                            <div className="embedded-video">
+                                <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1M9ZaqRRZkk?start=5" title="YouTube video player"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                            </div>
+                        </div>
+                    }
+                    {items[selectedItem]?.type === 'Article' &&
+                        <div className="article-text">
+                            {lorem.generateSentences(10)}<br/><br/>
+                            {lorem.generateSentences(10)}<br/><br/>
+                            {lorem.generateSentences(10)}<br/><br/>
+                            {lorem.generateSentences(10)}
+                        </div>
+                    }
                 </div>
             </Dialog>
         </div>
