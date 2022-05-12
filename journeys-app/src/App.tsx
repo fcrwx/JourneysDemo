@@ -1,15 +1,15 @@
 import React, {useEffect} from 'react';
 import './App.scss';
-import Stack from '@mui/material/Stack';
-import Slide from '@mui/material/Slide';
-import {TransitionProps} from '@mui/material/transitions';
-import {IJourneyItem} from './interfaces/IJourneyItem';
+import {JourneyTask} from './interfaces/JourneyTask';
 import {StartExecutionResponse} from './interfaces/StartExecutionResponse';
 import {ExecutionHistoryResponse, ExecutionType} from './interfaces/ExecutionHistoryResponse';
-import {v4 as uuidv4} from 'uuid';
 import JourneyItem from './JourneyItem';
+import {v4 as uuidv4} from 'uuid';
 import {AppBar, Button, Dialog, IconButton, Toolbar, Typography} from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Slide from '@mui/material/Slide';
 import CloseIcon from '@mui/icons-material/Close';
+import {TransitionProps} from '@mui/material/transitions';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -23,26 +23,27 @@ const Transition = React.forwardRef(function Transition(
 const startExecutionUrl = '/alpha/startExecution';
 const getExecutionHistoryUrl = '/alpha/getExecutionHistory';
 const sendTaskSuccessUrl = '/alpha/startExecution';
+const describeStateMachineUrl = '/alpha/describeStateMachine';
 
 const stateMachineArn = 'arn:aws:states:us-east-2:241070116743:stateMachine:MyFirstJourney';
 
 function App() {
-    const [items, setItems] = React.useState<IJourneyItem[]>([]);
+    const [items, setItems] = React.useState<JourneyTask[]>([]);
     const [open, setOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState(0);
     const [executionArn, setExecutionArn] = React.useState('');
 
     useEffect(() => {
         const startExecution = async () => {
-            const request = new Request(startExecutionUrl, {
+            const startExecutionRequest = new Request(startExecutionUrl, {
                 method: 'POST',
                 body: JSON.stringify({
                     name: uuidv4(),
                     stateMachineArn: stateMachineArn
                 })
             });
-            const response = await fetch(request);
-            const data = await response.json() as StartExecutionResponse;
+            const startExecutionResponse = await fetch(startExecutionRequest);
+            const data = await startExecutionResponse.json() as StartExecutionResponse;
             setExecutionArn(data.executionArn);
 
             const historyRequest = new Request(getExecutionHistoryUrl, {
@@ -60,11 +61,11 @@ function App() {
         };
 
         const buildTasks = async (data: ExecutionHistoryResponse) => {
-            const executionItems: IJourneyItem[] = [];
+            const executionItems: JourneyTask[] = [];
             let number = 0;
             data.events.forEach((eventItem) => {
                 if ([ExecutionType.TaskSubmitted, ExecutionType.TaskScheduled, ExecutionType.TaskStarted, ExecutionType.TaskStateEntered].includes(eventItem.type)) {
-                    const newItem: IJourneyItem = {
+                    const newItem: JourneyTask = {
                         id: number,
                         title: `Event ${number}`,
                         description: `Description for Event ${number}`,

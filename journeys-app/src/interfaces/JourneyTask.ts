@@ -1,4 +1,4 @@
-export interface IJourneyItem {
+export interface JourneyTask {
     id: number;
     title: string;
     description: string;

@@ -3,7 +3,7 @@ import './JourneyItem.scss';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import {styled} from '@mui/material/styles';
-import {IJourneyItem} from "./interfaces/IJourneyItem";
+import {JourneyTask} from "./interfaces/JourneyTask";
 import {Box} from "@mui/material";
 
 const Item = styled(Paper)(({theme}) => ({
@@ -14,7 +14,7 @@ const Item = styled(Paper)(({theme}) => ({
     color: theme.palette.text.secondary,
 }));
 
-function JourneyItem(props: { item: IJourneyItem, launch: any }) {
+function JourneyItem(props: { item: JourneyTask, launch: any }) {
     useEffect(() => {
         setItemComplete(props.item.complete)
     }, [props.item.complete]);
