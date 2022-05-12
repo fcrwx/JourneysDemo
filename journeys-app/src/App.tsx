@@ -119,7 +119,7 @@ function App() {
             const sendTaskSuccessRequest = new Request(sendTaskSuccessUrl, {
                 method: 'POST',
                 body: JSON.stringify({
-                    output: {},
+                    output: "{}",
                     taskToken: token
                 })
             });
