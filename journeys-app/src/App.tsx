@@ -3,10 +3,13 @@ import './App.scss';
 import Stack from '@mui/material/Stack';
 import Slide from '@mui/material/Slide';
 import {TransitionProps} from '@mui/material/transitions';
-import {IJourneyItem} from "./interfaces/IJourneyItem";
-import {StartExecutionResponse} from "./interfaces/StartExecutionResponse";
-import {ExecutionHistoryResponse, ExecutionType} from "./interfaces/ExecutionHistoryResponse";
+import {IJourneyItem} from './interfaces/IJourneyItem';
+import {StartExecutionResponse} from './interfaces/StartExecutionResponse';
+import {ExecutionHistoryResponse, ExecutionType} from './interfaces/ExecutionHistoryResponse';
 import {v4 as uuidv4} from 'uuid';
+import JourneyItem from './JourneyItem';
+import {AppBar, Button, Dialog, IconButton, Toolbar, Typography} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -17,9 +20,10 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const startExecutionUrl = 'https://chs5cc0z8f.execute-api.us-east-1.amazonaws.com/alpha/startExecution';
-const getExecutionHistoryUrl = 'https://chs5cc0z8f.execute-api.us-east-1.amazonaws.com/alpha/getExecutionHistory';
-const sendTaskSuccessUrl = 'https://chs5cc0z8f.execute-api.us-east-1.amazonaws.com/alpha/startExecution';
+const startExecutionUrl = '/alpha/startExecution';
+const getExecutionHistoryUrl = '/alpha/getExecutionHistory';
+const sendTaskSuccessUrl = '/alpha/startExecution';
+
 const stateMachineArn = 'arn:aws:states:us-east-2:241070116743:stateMachine:MyFirstJourney';
 
 function App() {
@@ -32,55 +36,50 @@ function App() {
         const startExecution = async () => {
             const request = new Request(startExecutionUrl, {
                 method: 'POST',
-                mode: 'no-cors',
                 body: JSON.stringify({
                     name: uuidv4(),
                     stateMachineArn: stateMachineArn
                 })
             });
             const response = await fetch(request);
-            console.dir(response);
             const data = await response.json() as StartExecutionResponse;
             setExecutionArn(data.executionArn);
-        };
 
-        const getExecutionHistory = async () => {
-            const request = new Request(getExecutionHistoryUrl, {
+            const historyRequest = new Request(getExecutionHistoryUrl, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({
-                    executionArn: executionArn,
+                    executionArn: data.executionArn,
                     includeExecutionData: true,
                     maxResults: 100,
                     reverseOrder: false
                 })
             });
-            const response = await fetch(request);
-            const data = await response.json() as ExecutionHistoryResponse;
-            console.dir(data);
-            await buildTasks(data);
+            const historyResponse = await fetch(historyRequest);
+            const historyData = await historyResponse.json() as ExecutionHistoryResponse;
+            await buildTasks(historyData);
         };
 
         const buildTasks = async (data: ExecutionHistoryResponse) => {
             const executionItems: IJourneyItem[] = [];
+            let number = 0;
             data.events.forEach((eventItem) => {
                 if ([ExecutionType.TaskSubmitted, ExecutionType.TaskScheduled, ExecutionType.TaskStarted, ExecutionType.TaskStateEntered].includes(eventItem.type)) {
                     const newItem: IJourneyItem = {
-                        id: eventItem.id,
-                        title: `Event ${eventItem.id}`,
-                        description: `Description for Event ${eventItem.id}`,
+                        id: number,
+                        title: `Event ${number}`,
+                        description: `Description for Event ${number}`,
                         complete: false
                     }
                     executionItems.push(newItem);
+                    number++;
                 }
             });
             setItems(executionItems);
         }
 
-        startExecution().then(() => {
-            getExecutionHistory().then();
-        });
-    }, [executionArn, items]);
+        startExecution().then();
+    }, []);
 
     const handleClickOpen = (_event: any, index: number) => {
         setSelectedItem(index);
@@ -104,45 +103,46 @@ function App() {
             </div>
 
             <Stack spacing={2}>
-                {/*<JourneyItem item={items[0]} launch={handleClickOpen}></JourneyItem>*/}
-                {/*<JourneyItem item={items[1]} launch={handleClickOpen}></JourneyItem>*/}
-                {/*<JourneyItem item={items[2]} launch={handleClickOpen}></JourneyItem>*/}
+                {
+                    items.map(function (item) {
+                        return <JourneyItem key={item.id} item={item} launch={handleClickOpen}></JourneyItem>
+                    })
+                }
             </Stack>
 
-            {/*<Dialog*/}
-            {/*    fullScreen*/}
-            {/*    open={open}*/}
-            {/*    onClose={handleClose}*/}
-            {/*    TransitionComponent={Transition}*/}
-            {/*>*/}
-            {/*    <AppBar sx={{position: 'relative'}}>*/}
-            {/*        <Toolbar>*/}
-            {/*            <IconButton*/}
-            {/*                edge="start"*/}
-            {/*                color="inherit"*/}
-            {/*                onClick={handleClose}*/}
-            {/*                aria-label="close"*/}
-            {/*            >*/}
-            {/*                <CloseIcon/>*/}
-            {/*            </IconButton>*/}
-            {/*            <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">*/}
-            {/*                Article: {items[selectedItem].title}*/}
-            {/*            </Typography>*/}
-            {/*            <Button autoFocus color="inherit" onClick={() => {*/}
-            {/*                let newArr = [...items];*/}
-            {/*                newArr[selectedItem].complete = true;*/}
-            {/*                console.dir(newArr);*/}
-            {/*                setItems(newArr);*/}
-            {/*                handleClose()*/}
-            {/*            }}>*/}
-            {/*                Mark Read*/}
-            {/*            </Button>*/}
-            {/*        </Toolbar>*/}
-            {/*    </AppBar>*/}
-            {/*    <div className="article-content">*/}
-            {/*        {items[selectedItem].description}*/}
-            {/*    </div>*/}
-            {/*</Dialog>*/}
+            <Dialog
+                fullScreen
+                open={open}
+                onClose={handleClose}
+                TransitionComponent={Transition}
+            >
+                <AppBar sx={{position: 'relative'}}>
+                    <Toolbar>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={handleClose}
+                            aria-label="close"
+                        >
+                            <CloseIcon/>
+                        </IconButton>
+                        <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">
+                            Article: {items[selectedItem]?.title}
+                        </Typography>
+                        <Button autoFocus color="inherit" onClick={() => {
+                            let newArr = [...items];
+                            newArr[selectedItem].complete = true;
+                            setItems(newArr);
+                            handleClose()
+                        }}>
+                            Mark Read
+                        </Button>
+                    </Toolbar>
+                </AppBar>
+                <div className="article-content">
+                    {items[selectedItem]?.description}
+                </div>
+            </Dialog>
         </div>
     );
 }
