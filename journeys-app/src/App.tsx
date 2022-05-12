@@ -10,7 +10,7 @@ import Slide from '@mui/material/Slide';
 import CloseIcon from '@mui/icons-material/Close';
 import {TransitionProps} from '@mui/material/transitions';
 import {StartExecutionResponse} from './interfaces/StartExecutionResponse';
-import {ExecutionHistoryResponse, ExecutionType} from './interfaces/ExecutionHistoryResponse';
+import {ExecutionHistoryResponse, ExecutionType, TaskScheduledEventDetailsParameters} from './interfaces/ExecutionHistoryResponse';
 import {DescribeStateMachineResponse} from "./interfaces/DescribeStateMachineResponse";
 import {StateMachineDefinition} from "./interfaces/StateMachineDefinition";
 
@@ -27,10 +27,12 @@ const lorem = new LoremIpsum();
 
 const startExecutionUrl = '/alpha/startExecution';
 const getExecutionHistoryUrl = '/alpha/getExecutionHistory';
-const sendTaskSuccessUrl = '/alpha/startExecution';
+const sendTaskSuccessUrl = '/alpha/sendTaskSuccess';
 const describeStateMachineUrl = '/alpha/describeStateMachine';
 
 const stateMachineArn = 'arn:aws:states:us-east-2:241070116743:stateMachine:MyFirstJourney';
+
+const introductionText = lorem.generateSentences(6);
 
 function App() {
     const [items, setItems] = React.useState<JourneyTask[]>([]);
@@ -62,19 +64,6 @@ function App() {
             const stateMachineDefinition = JSON.parse(stateMachineData.definition) as StateMachineDefinition;
             console.dir(stateMachineDefinition);
             await buildTasks(stateMachineDefinition);
-
-            // const getExecutionHistoryRequest = new Request(getExecutionHistoryUrl, {
-            //     method: 'POST',
-            //     body: JSON.stringify({
-            //         executionArn: startExecutionData.executionArn,
-            //         includeExecutionData: true,
-            //         maxResults: 100,
-            //         reverseOrder: false
-            //     })
-            // });
-            // const getExecutionHistoryResponse = await fetch(getExecutionHistoryRequest);
-            // const getExecutionHistoryData = await getExecutionHistoryResponse.json() as ExecutionHistoryResponse;
-            // await buildTasks(getExecutionHistoryData);
         };
 
         const buildTasks = async (data: StateMachineDefinition) => {
@@ -106,15 +95,45 @@ function App() {
         setOpen(false);
     };
 
+    const getExecutionHistory = async () => {
+        const getExecutionHistoryRequest = new Request(getExecutionHistoryUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+                executionArn: executionArn,
+                includeExecutionData: true,
+                maxResults: 100,
+                reverseOrder: false
+            })
+        });
+        const getExecutionHistoryResponse = await fetch(getExecutionHistoryRequest);
+        return await getExecutionHistoryResponse.json() as ExecutionHistoryResponse;
+    }
+
+    const sendTaskSuccess = async () => {
+        const executionHistory: ExecutionHistoryResponse = await getExecutionHistory();
+        const currentTask = executionHistory.events.find((eventItem) => eventItem.type === ExecutionType.TaskScheduled);
+        if (currentTask) {
+            const taskParameters = JSON.parse(currentTask.taskScheduledEventDetails.parameters) as TaskScheduledEventDetailsParameters;
+            const token = taskParameters.Payload.token;
+
+            const sendTaskSuccessRequest = new Request(sendTaskSuccessUrl, {
+                method: 'POST',
+                body: JSON.stringify({
+                    output: {},
+                    taskToken: token
+                })
+            });
+            const sendTaskSuccessResponse = await fetch(sendTaskSuccessRequest);
+            console.log(sendTaskSuccessResponse);
+        }
+    }
+
     return (
         <div className="App">
             <div className="page-header">
                 <div className="page-title">Journeys Demo</div>
                 <div className="introduction">
-                    Sit amet purus gravida quis blandit. Purus semper eget duis at tellus. Ac turpis egestas integer eget aliquet. Vel facilisis volutpat est
-                    velit egestas dui id ornare. Sit amet porttitor eget dolor. Pretium aenean pharetra magna ac placerat. Magna fermentum iaculis eu non.
-                    Libero justo laoreet sit amet cursus sit amet. Odio aenean sed adipiscing diam donec adipiscing. Sed ullamcorper morbi tincidunt ornare
-                    massa eget egestas. Id ornare arcu odio ut sem nulla pharetra diam.
+                    {introductionText}
                 </div>
             </div>
 
@@ -154,9 +173,10 @@ function App() {
                                 newArr[selectedItem + 1].disabled = false;
                             }
                             setItems(newArr);
-                            handleClose()
+                            sendTaskSuccess().then();
+                            handleClose();
                         }}>
-                            Mark Read
+                            Mark Done
                         </Button>
                     </Toolbar>
                 </AppBar>

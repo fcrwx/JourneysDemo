@@ -6,7 +6,8 @@ export interface ExecutionEvent {
     id: number;
     previousEventId: number;
     timestamp: number;
-    type: ExecutionType
+    type: ExecutionType;
+    taskScheduledEventDetails: TaskScheduledEventDetails;
 }
 
 export enum ExecutionType {
@@ -15,4 +16,20 @@ export enum ExecutionType {
     TaskScheduled = 'TaskScheduled',
     TaskStarted = 'TaskStarted',
     TaskSubmitted = 'TaskSubmitted'
+}
+
+export interface TaskScheduledEventDetails {
+    parameters: string;
+    region: string;
+    resource: string;
+    resourceType: string;
+}
+
+export interface TaskScheduledEventDetailsParameters {
+    FunctionName: string;
+    Payload: TaskScheduledEventDetailsParametersPayload;
+}
+
+export interface TaskScheduledEventDetailsParametersPayload {
+    token: string;
 }
