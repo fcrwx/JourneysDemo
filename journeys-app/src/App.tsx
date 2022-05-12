@@ -86,7 +86,8 @@ function App() {
                     id: index,
                     title: `${type}: ${data.States[key].Comment}`,
                     description: lorem.generateSentences(4),
-                    complete: false
+                    complete: false,
+                    disabled: index !== 0
                 }
                 executionItems.push(newItem);
             });
@@ -148,6 +149,10 @@ function App() {
                         <Button autoFocus color="inherit" onClick={() => {
                             let newArr = [...items];
                             newArr[selectedItem].complete = true;
+                            newArr[selectedItem].disabled = true;
+                            if (selectedItem !== newArr.length - 1) {
+                                newArr[selectedItem + 1].disabled = false;
+                            }
                             setItems(newArr);
                             handleClose()
                         }}>
