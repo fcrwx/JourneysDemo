@@ -191,6 +191,15 @@ function App() {
                             </div>
                         </div>
                     }
+                    {items[selectedItem]?.type === 'Post' &&
+                        <div className="article-text">
+                            {lorem.generateSentences(10)}<br/><br/>
+                            <div className="embedded-post">
+                                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:6929807553010819072" height="608" width="504"
+                                        frameBorder="0" allowFullScreen title="Embedded post"></iframe>
+                            </div>
+                        </div>
+                    }
                     {items[selectedItem]?.type === 'Article' &&
                         <div className="article-text">
                             {lorem.generateSentences(10)}<br/><br/>
