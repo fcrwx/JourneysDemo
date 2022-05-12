@@ -16,10 +16,12 @@ const Item = styled(Paper)(({theme}) => ({
 
 function JourneyItem(props: { item: JourneyTask, launch: any }) {
     useEffect(() => {
-        setItemComplete(props.item.complete)
-    }, [props.item.complete]);
+        setItemComplete(props.item.complete);
+        setItemDisabled(props.item.disabled);
+    }, [props.item.complete, props.item.disabled]);
 
     const [itemComplete, setItemComplete] = useState(props.item.complete);
+    const [itemDisabled, setItemDisabled] = useState(props.item.disabled);
 
     return (
         <div className="journey-item">
@@ -29,10 +31,10 @@ function JourneyItem(props: { item: JourneyTask, launch: any }) {
                     {!itemComplete && <div className="complete-icon">☐</div>}
 
                     <div className="content">
-                        <div className="title">Article: {props.item.title}</div>
+                        <div className="title">{props.item.title}</div>
                         <div className="description">{props.item.description}</div>
                         <div className="action-buttons">
-                            <Button variant="outlined" disabled={itemComplete} onClick={(e: any) => props.launch(e, props.item.id)}>Launch</Button>
+                            <Button variant="outlined" disabled={itemDisabled} onClick={(e: any) => props.launch(e, props.item.id)}>Launch</Button>
                         </div>
                     </div>
                 </Box>

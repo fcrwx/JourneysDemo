@@ -3,4 +3,5 @@ export interface JourneyTask {
     title: string;
     description: string;
     complete: boolean;
+    disabled: boolean;
 }
