@@ -126,7 +126,8 @@ function App() {
             </Stack>
 
             <Dialog
-                fullScreen
+                fullWidth={true}
+                maxWidth={'lg'}
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
@@ -142,7 +143,7 @@ function App() {
                             <CloseIcon/>
                         </IconButton>
                         <Typography sx={{ml: 2, flex: 1}} variant="h6" component="div">
-                            Article: {items[selectedItem]?.title}
+                            {items[selectedItem]?.title}
                         </Typography>
                         <Button autoFocus color="inherit" onClick={() => {
                             let newArr = [...items];
@@ -155,7 +156,10 @@ function App() {
                     </Toolbar>
                 </AppBar>
                 <div className="article-content">
-                    {items[selectedItem]?.description}
+                    {lorem.generateSentences(10)}<br/><br/>
+                    {lorem.generateSentences(10)}<br/><br/>
+                    {lorem.generateSentences(10)}<br/><br/>
+                    {lorem.generateSentences(10)}<br/><br/>
                 </div>
             </Dialog>
         </div>
