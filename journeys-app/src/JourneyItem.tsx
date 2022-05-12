@@ -29,7 +29,7 @@ function JourneyItem(props: { item: JourneyTask, launch: any }) {
                     {!itemComplete && <div className="complete-icon">☐</div>}
 
                     <div className="content">
-                        <div className="title">Article: {props.item.title}</div>
+                        <div className="title">{props.item.title}</div>
                         <div className="description">{props.item.description}</div>
                         <div className="action-buttons">
                             <Button variant="outlined" disabled={itemComplete} onClick={(e: any) => props.launch(e, props.item.id)}>Launch</Button>
