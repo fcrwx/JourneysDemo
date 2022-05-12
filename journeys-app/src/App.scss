@@ -13,8 +13,17 @@
     }
 }
 
-.article-content {
+.dialog-content {
     margin: 50px;
+
+    .embedded-video {
+        text-align: center;
+        margin: 5px 0 30px 0;
+    }
+
+    .embedded-post {
+        text-align: center;
+    }
 }
 
 .stepper-container {
